@@ -359,7 +359,7 @@ WFT.ini:SetScript("OnEvent", function(self, event, ...)
 	}
 
 	WFT.combatlogger = CreateFrame("Frame")
-	WFT.combatlogger:RegisterEvent("COMBAT_LOG_EVENT")
+	WFT.combatlogger:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	WFT.combatlogger:SetScript("OnEvent", function(self, event, ...)
 		local timestamp,eventType,source,srcName,_,dstGUID,auraDest,_,spellID, spellName = ...
 
@@ -391,9 +391,9 @@ WFT.ini:SetScript("OnEvent", function(self, event, ...)
 
 			if ( spellName == "Windfury Totem" ) then
 				wftguid=dstGUID;
-				lastWFTrefresh = GetTime() - latency
+				lastWFTrefresh = GetTime()
 				WFTup = true
-				WFT.mf.cooldown:SetCooldown(GetTime(), 10 - latency)
+				WFT.mf.cooldown:SetCooldown(GetTime(), 10)
 				wftotem = true
 			elseif tContains(airtotems,spellName) then
 				wftotem = false
@@ -492,9 +492,9 @@ WFT.ini:SetScript("OnEvent", function(self, event, ...)
 				end
 			end
 			
-
 			if WFTup then
-				duration = 10 - (now - lastWFTrefresh)
+				local duration = 10 - (now - lastWFTrefresh)
+				print(lastWFTrefresh)
 				if wftotem and ( duration < 5 ) then
 					lastWFTrefresh = lastWFTrefresh + 5
 					duration =  10 - (now - lastWFTrefresh)
@@ -567,16 +567,17 @@ WFT.ini:SetScript("OnEvent", function(self, event, ...)
 
 		if WFTremaining > 0.5 then
 			if SSremaining > 0.5 then
-				if WFremaining < 0.5 and (SSremaining - WFremaining) < 0.2 and (autoremaining - SSremaining) < 0.3 then
+				if WFremaining < 0.5 and (SSremaining - WFremaining) < 0.5 and (autoremaining - SSremaining) < 0.6 then
 					setNextSpell(SSTexture)
+					WFT.NEXTSPELL.cooldown:SetCooldown(now - SSremaining,10)
 				elseif shockCD then
 					if shockremaining < (WFTremaining + 0.5) or SSremaining < (WFTremaining + 0.5) then
 						if shockremaining < SSremaining then
 							setNextSpell(ShockTexture)
-							WFT.NEXTSPELL.cooldown:SetCooldown(now,shockremaining)
+							WFT.NEXTSPELL.cooldown:SetCooldown(now - shockremaining,6)
 						else
 							setNextSpell(SSTexture)
-							WFT.NEXTSPELL.cooldown:SetCooldown(now,SSremaining)
+							WFT.NEXTSPELL.cooldown:SetCooldown(now - SSremaining,10)
 						end
 					else
 						setNextSpell(WFTTexture)
@@ -679,7 +680,7 @@ WFT.ini:SetScript("OnEvent", function(self, event, ...)
 	WFT.WepModule = CreateFrame("FRAME", "WFT_wepModuleFrame", WFT.mf)
 	WFT.WepModule:SetPoint("TOPRIGHT", WFT.background, "TOPLEFT", -edgeSize)
 	WFT.WepModule:SetWidth(framesize)
-	WFT.WepModule:SetPoint("BOTTOMRIGHT", WFT.background, "BOTTOMLEFT", -edgeSize)
+	WFT.WepModule:SetHeight(WFT.background:GetHeight())
 
 	WFT.WepModule.tex = WFT.WepModule:CreateTexture("nil", "BACKGROUND")
 	WFT.WepModule.tex:SetAllPoints()
@@ -773,9 +774,9 @@ WFT.ini:SetScript("OnEvent", function(self, event, ...)
 					for k,v in pairs(WFT.enhancements) do
 						if strmatch(text,k) then 
 							local name, rank, texture, manaCost = GetSpellInfo(v.id)
-							local duration = strsub(text,strlen(k)+5, strlen(text)-5)
-							duration = tonumber(duration)
-							return name, texture, duration
+							local enhDur = strsub(text,strlen(k)+5, strlen(text)-5)
+							enhDur = tonumber(enhDur)
+							return name, texture, enhDur
 						end
 					end
 				end
@@ -797,19 +798,19 @@ WFT.ini:SetScript("OnEvent", function(self, event, ...)
 		local t = WFT.tooltip
 		t:ClearLines()
 		t:SetInventoryItem("player", hand.invSlot)
-		local name, texture, duration = WFT.getEnhancement(WFT.tooltip:GetRegions())
+		local name, texture, enhDur = WFT.getEnhancement(WFT.tooltip:GetRegions())
 		local hasMainHandEnchant, mainHandExpiration, mainHandCharges, hasOffHandEnchant, offHandExpiration, offHandCharges = GetWeaponEnchantInfo()
 		if hand.invSlot == 16 and mainHandExpiration then
-			duration = mainHandExpiration/1000
-			--WFT.print(floor(duration/60).."mins "..floor(mod(duration,60)).."sec")
+			enhDur = mainHandExpiration/1000
+			--WFT.print(floor(enhDur/60).."mins "..floor(mod(enhDur,60)).."sec")
 		elseif offHandExpiration then
-			duration = offHandExpiration/1000
+			enhDur = offHandExpiration/1000
 		end
-		if (name and texture and duration) then
+		if (name and texture and enhDur) then
 			hand:Show()
 			hand.enhtexture:SetTexture(texture)
-			hand.cooldown:SetCooldown(GetTime()-(30*60 - duration), 30*60)
-			hand.remaining = duration
+			hand.cooldown:SetCooldown(GetTime()-(30*60 - enhDur), 30*60)
+			hand.remaining = enhDur
 		else
 			hand:Hide()
 		end
