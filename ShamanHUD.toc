@@ -1,0 +1,11 @@
+## Interface: 20400
+## Title: ShamanHUD
+## Version: 1.2.1
+## Notes: Stacks shaman stuff
+## Author: Bluey
+## X-Category: Shaman
+## SavedVariables: ShamanHUDSV, WFT_SV
+
+ShamanHUD.toc
+WFTracker.lua
+WFSim.lua
