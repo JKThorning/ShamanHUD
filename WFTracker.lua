@@ -4,7 +4,7 @@ local GetTime = GetTime
 local UnitMana = UnitMana
 local UnitManaMax = UnitManaMax
 local GetTotemInfo = GetTotemInfo
-
+local TWIST = true
 function WFT.SlashCmdList_AddSlashCommand(name, func, ...)
     SlashCmdList[name] = func
     local command = ''
@@ -98,6 +98,19 @@ WFT.ini:SetScript("OnEvent", function(self, event, ...)
 	WFT.tf.text:SetText("WF\nTT")
 	WFT.mf:EnableMouse(true)
 	WFT.mf:RegisterForDrag("LeftButton")
+	local menuFrame = CreateFrame("Frame", "ExampleMenuFrame", UIParent, "UIDropDownMenuTemplate")
+	WFT.mf:SetScript("OnMouseDown", function(self, button, down)
+		if button == "RightButton" then
+			local menu = {
+				{text = "Totem twist",
+				checked = TWIST,
+				func = function()
+					TWIST = not(TWIST)
+				end}
+			}
+			EasyMenu(menu, menuFrame, "cursor", 0 , 0, "MENU");
+		end
+	end)
 	WFT.mf:SetClampedToScreen(true)
 	WFT.mf:SetMovable(true)
 	WFT.mf:Show()
@@ -112,14 +125,6 @@ WFT.ini:SetScript("OnEvent", function(self, event, ...)
 	end)
 
 	WFT.mf:Show()	
-	WFT.mf:SetScript("OnClick", function(self, button)
-		if button == "RightButton" then
-			WFT.mf:Hide()
-			WFT.active = false
-			ShamanHUDSV.active = false
-			DEFAULT_CHAT_FRAME:AddMessage("Annihilator hidden. type /bluey on to show again.")
-		end
-	end)
 
 	WFT.wft = CreateFrame("Frame", "WFTextureFrame", WFT.mf)
 	WFT.wft:SetPoint("TOPLEFT", WFT.wft:GetParent(), "TOPRIGHT", 2, 0)
@@ -564,7 +569,10 @@ WFT.ini:SetScript("OnEvent", function(self, event, ...)
 		local shockremaining = 6 - (now - lastShock)
 		local SSremaining = 10 - (now - lastSSuse)
 		local GCDremaining = GCD - (now - lastGCD)
-
+		if not(TWIST) then
+			WFTremaining = 10
+		end
+		
 		if WFTremaining > 0.5 then
 			if SSremaining > 0.5 then
 				if WFremaining < 0.5 and (SSremaining - WFremaining) < 0.5 and (autoremaining - SSremaining) < 0.6 then
