@@ -4,8 +4,8 @@
 ## Notes: Stacks shaman stuff
 ## Author: Bluey
 ## X-Category: Shaman
-## SavedVariables: ShamanHUDSV, WFT_SV
+## SavedVariables: ShamanHUDSV, WFT_SV, ST_SV
 
 ShamanHUD.toc
 WFTracker.lua
-WFSim.lua
+StatTracker.lua
