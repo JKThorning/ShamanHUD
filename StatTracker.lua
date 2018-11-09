@@ -14,38 +14,38 @@ tile = true, tileSize = 16, edgeSize = 16,
 insets = { left = 0, right = 0, top = 0, bottom = 0 }})
 local stats = {
 	["Attack Power"] = {
-		["short"] = "AP",
+		["short"] = "ATP",
 		["EP"] = 1,
 		["call"] = function() return select(2,UnitAttackPower("player")) end,
-		["color"] = {173,255,47},
+		["color"] = {122,255,11},
 		["nr"] = 1
 	},
 	["Strength"] = {
 		["short"] = "STR",
 		["EP"] = 2.2,
 		["call"] = function() return  select(3,UnitStat("PLAYER", 1)) end,
-		["color"] = {139,69,19},
+		["color"] = {200,100,0},
 		["nr"] = 2
 	},
 	["Agility"] = {
 		["short"] = "AGI",
 		["EP"] = 1.89,
 		["call"] = function() return select(3,UnitStat("PLAYER", 2)) end,
-		["color"] = {15,128,15},
+		["color"] = {255,11,11},
 		["nr"] = 3
 	},
 	["Crit Rating"] = {
 		["short"] = "CRT",
 		["EP"] = 1.94,
 		["call"] = function() return floor(GetCombatRatingBonus(9)*22.077) end,
-		["color"] = {255, 255, 0},
+		["color"] = {228,228,11},
 		["nr"] = 4
 	},
 	["Haste Rating"] = {
 		["short"] = "HST",
 		["EP"] = 1.98,
 		["call"] = function() return floor(GetCombatRatingBonus(18)*15.77) end,
-		["color"] = {255, 127, 80},
+		["color"] = {247,247,150},
 		["nr"] = 5
 	},
 	["Hit Rating"] = {
