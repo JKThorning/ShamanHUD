@@ -124,6 +124,7 @@ local function newEditBox(parent)
 			self:SetTextColor(1,1,1,1)
 			o.EBnum = num
 			StatTracker.Statusbar:SetMinMaxValues(0,num)
+			StatTracker:UpdateInfo()
 			if num > 1.5 then
 				local xOffs = StatTracker.Statusbar:GetWidth()-StatTracker.Statusbar:GetWidth()*1.5/num
 				StatTracker.StatusbarBar:SetPoint("RIGHT", -xOffs, 0)
@@ -223,7 +224,14 @@ function StatTracker.UpdateInfo(self)
 		str = str .. " / "..round(offSpeed,2)
 	end
 	self.MainText:SetText(str)
-	str = "Attack speed diff = ".. (mainSpeed-1.5)
+	if tableHasKey(o.penalty,mainSpeed) then
+		local AS = round(mainSpeed, 3)
+		print(AS)
+		local p = o.penalty[mainSpeed]
+		str = str.."AS penalty = "..round(p/o.penalty[1.5],2)
+	else
+		str = "Penalty not found"
+	end
 	StatTracker.SecondText:SetText(str)
 end
 
