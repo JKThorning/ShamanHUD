@@ -7,5 +7,6 @@
 ## SavedVariables: ShamanHUDSV, WFT_SV, ST_SV
 
 ShamanHUD.toc
+utils.lua
 WFTracker.lua
 StatTracker.lua

@@ -177,6 +177,17 @@ local function addEventWatcher(frame)
 end
 addEventWatcher(StatTracker)
 
+local function updateBaseAS()
+	local result = 2
+	local link = GetInventoryItemLink("player", 16)
+	local speedstring = ShamanHUD_GetTooltipLines(link)[6]
+	local speed = tonumber(strsub(speedstring, 7))
+	if speed then
+		result = speed
+	end
+	StatTracker.ASEditBox:SetText(result)
+end
+
 local function updateStats()
 	local maxEPVal = 0
 	local totalEP = 0
@@ -226,9 +237,15 @@ function StatTracker.UpdateInfo(self)
 	self.MainText:SetText(str)
 	if tableHasKey(o.penalty,mainSpeed) then
 		local AS = round(mainSpeed, 3)
-		print(AS)
 		local p = o.penalty[mainSpeed]
-		str = str.."AS penalty = "..round(p/o.penalty[1.5],2)
+		local pnorm = p/o.penalty[1.5]
+		str = "WF multiplier = "..round(pnorm,2)
+		local pbarval = pnorm*o.penalty[1.6]
+		StatTracker.PenaltyBar:SetValue(pbarval*100)
+		local r = 1-pbarval
+		local g = pbarval
+		local b = 0
+		StatTracker.PenaltyBar:SetStatusBarColor(r,g,b,1)
 	else
 		str = "Penalty not found"
 	end
@@ -237,7 +254,6 @@ end
 
 local StatTracker_OnLoad = function(self, event)
 	self:UnregisterEvent("VARIABLES_LOADED")
-	
 	
 	if not ST_SV then ST_SV = {} end
 	o = ST_SV
@@ -266,6 +282,7 @@ end
 local StatTracker_OnInventoryChanged = function(self, event, ...)
 	if ... == "player" then
 		updateStats()
+		updateBaseAS()
 	end
 end
 addEvent(StatTracker, "VARIABLES_LOADED", StatTracker_OnLoad, true)
@@ -304,6 +321,16 @@ StatTracker.StatusbarBar:SetHeight(10)
 StatTracker.StatusbarBar:SetTexture(1 ,0.2, 0, 1)
 -- element 4
 StatTracker.SecondText = newFontString(StatTracker, "TOPLEFT", FRAME_STATTRACKER_EDGESIZE, -54)
+-- element 5
+StatTracker.PenaltyBar = CreateFrame("Statusbar", StatTracker:GetName().."_penaltyBar", StatTracker)
+StatTracker.PenaltyBar:SetPoint("TOPLEFT", StatTracker.SecondText, "BOTTOMLEFT", 0, -FRAME_STATTRACKER_EDGESIZE)
+StatTracker.PenaltyBar:SetHeight(25)
+StatTracker.PenaltyBar:SetWidth(StatTracker:GetWidth()-2*FRAME_STATTRACKER_EDGESIZE)
+StatTracker.PenaltyBar:SetOrientation("HORIZONTAL")
+StatTracker.PenaltyBar:SetMinMaxValues(0,100)
+StatTracker.PenaltyBar:EnableMouse(true)
+StatTracker.PenaltyBar:SetStatusBarTexture(TEXTURE_BAR)
+StatTracker.PenaltyBar:SetStatusBarColor(1,1,1,1)
 
 
 setStyle(StatTracker)
