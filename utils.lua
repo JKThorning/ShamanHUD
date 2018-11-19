@@ -10,9 +10,6 @@ local function ReadRegions(...)
             local text = region:GetText() -- string or nil
             if text and strlen(text) > 0 then 
                 tinsert(result, text)
-                if debug then
-                    DEFAULT_CHAT_FRAME:AddMessage(i.. " = " ..text)
-                end
             end
         end
     end

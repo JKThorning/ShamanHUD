@@ -262,7 +262,7 @@ local StatTracker_OnLoad = function(self, event)
 	end
 	if not o.penalty then
 		o.penalty = {}
-		print(select("#", AS))
+		--print(select("#", AS))
 		for i = 1,701 do
 			o.penalty[AS[i]] = ASPEN[i]
 		end
